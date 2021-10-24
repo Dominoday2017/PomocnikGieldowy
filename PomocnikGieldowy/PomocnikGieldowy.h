@@ -6,6 +6,7 @@
 #include <QWidget>
 #include <QApplication>
 #include <QPushButton>
+#include <QLineEdit>
 #include <QLabel>
 
 class PomocnikGieldowy : public QWidget {
@@ -20,8 +21,24 @@ private slots:
 
 private:
     QLabel* nameLabel1;
-    QLabel* valueLabel1;
     QLabel* nameLabel2;
+
+    QLabel* valueLabel1;
     QLabel* valueLabel2;
+
+    QLineEdit* actionValue1;
+    QLineEdit* actionValue2;
+
+    QLineEdit* actionPrice1;
+    QLineEdit* actionPrice2;
+
+    QPushButton* calcBtn1;
+    QPushButton* calcBtn2;
+
+    QPushButton* saveBtn1;
+    QPushButton* saveBtn2;
+
+    QLabel* resultLabel1;
+    QLabel* resultLabel2;
 
 };
