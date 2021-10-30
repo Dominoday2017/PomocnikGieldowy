@@ -28,7 +28,10 @@ private slots:
     void get_data3();
     void get_data4();
     void save_to_file1();
-    //void save_to_file2();
+    void save_to_file2();
+    void save_to_file3();
+    void save_to_file4();
+    void write_to_file(std::string actionValue, std::string actionPrice, int row);
     void get_actual_data1();
     
 

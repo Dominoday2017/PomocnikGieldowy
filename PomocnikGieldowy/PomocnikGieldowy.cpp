@@ -251,20 +251,49 @@ void PomocnikGieldowy::get_data4() {
 
 //save input data to file
 
+void PomocnikGieldowy::write_to_file(std::string actionValue, std::string actionPrice, int row) {
+    float actionValueFloat = std::stof(actionValue);
+    float actionPriceFloat = std::stof(actionPrice);
+    bool isTrue = check_input(actionValueFloat, actionPriceFloat);
+
+    if (isTrue == true) {
+        std::fstream userData;
+        userData.open("data.txt");
+
+        userData << actionValue;
+        userData << " ";
+        userData << actionPrice;
+        userData << "\n";
+
+        userData.close();
+
+        QMessageBox msgBox;
+        msgBox.setText("Pomysle zapisano do pliku");
+        msgBox.exec();
+    }
+    else {
+        QMessageBox msgBox;
+        msgBox.setText("Blad zapisu do pliku");
+        msgBox.exec();
+    }
+}
+
 void PomocnikGieldowy::save_to_file1() {
-    std::ofstream userData;
-    userData.open("data.txt");
-
-    std::string actionPrice = actionPrice1->text().toStdString();
     std::string actionValue = actionValue1->text().toStdString();
+    std::string actionPrice = actionPrice1->text().toStdString();
+    write_to_file(actionValue, actionPrice, 1);
 
-    userData << actionValue;
-    userData << " ";
-    userData << actionPrice;
-    userData << "\n";
+}
 
-    userData.close();
-    
+void PomocnikGieldowy::save_to_file2() {
+
+}
+
+void PomocnikGieldowy::save_to_file3() {
+
+}
+
+void PomocnikGieldowy::save_to_file4() {
 
 }
 
