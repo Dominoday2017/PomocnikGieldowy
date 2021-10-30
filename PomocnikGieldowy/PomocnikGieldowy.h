@@ -9,6 +9,7 @@
 #include <QLineEdit>
 #include <QLabel>
 #include <iostream>
+#include <QMessageBox>
 
 class PomocnikGieldowy : public QWidget {
 
@@ -20,6 +21,8 @@ public:
 private slots:
 
     float calc_data(float actionValue, QString actionPriceString, float actionPrice);
+    bool check_input(float actionValue, float actionPrice);
+    void change_result_color(float value, int row);
     void get_data1();
     void get_data2();
     void get_data3();
