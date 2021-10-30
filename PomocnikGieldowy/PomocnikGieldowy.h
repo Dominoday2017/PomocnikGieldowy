@@ -27,16 +27,12 @@ private slots:
     void get_data2();
     void get_data3();
     void get_data4();
-    void save_to_file1();
-    void save_to_file2();
-    void save_to_file3();
-    void save_to_file4();
-    void write_to_file(std::string actionValue, std::string actionPrice, int row);
+    void save_to_file();
     void get_actual_data1();
     
 
 private:
-    QLabel* nameLabel1; //delete
+    QLabel* nameLabel1;
     QLabel* nameLabel2;
     QLabel* nameLabel3;
     QLabel* nameLabel4;
@@ -61,11 +57,6 @@ private:
     QPushButton* calcBtn3;
     QPushButton* calcBtn4;
 
-    QPushButton* saveBtn1;
-    QPushButton* saveBtn2;
-    QPushButton* saveBtn3;
-    QPushButton* saveBtn4;
-
     QLabel* resultLabel1;
     QLabel* resultLabel2;
     QLabel* resultLabel3;
@@ -73,5 +64,6 @@ private:
 
     QPushButton* restoreBtn;
     QPushButton* refreshBtn;
+    QPushButton* saveBtn;
 
 };

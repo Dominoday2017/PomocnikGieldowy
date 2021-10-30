@@ -53,11 +53,6 @@ PomocnikGieldowy::PomocnikGieldowy(QWidget* parent)
     calcBtn2 = new QPushButton("Policz", this);
     calcBtn3 = new QPushButton("Policz", this);
     calcBtn4 = new QPushButton("Policz", this);
- 
-    saveBtn1 = new QPushButton("Zapisz", this);
-    saveBtn2 = new QPushButton("Zapisz", this);
-    saveBtn3 = new QPushButton("Zapisz", this);
-    saveBtn4 = new QPushButton("Zapisz", this);
 
     resultLabel1 = new QLabel("0", this);
     resultLabel2 = new QLabel("0", this);
@@ -70,6 +65,7 @@ PomocnikGieldowy::PomocnikGieldowy(QWidget* parent)
 
     restoreBtn = new QPushButton("Przywroc z pamieci", this);
     refreshBtn = new QPushButton("Odswiez akcje");
+    saveBtn = new QPushButton("Zapisz");
 
     //---Add elements to layout---//
 
@@ -84,7 +80,6 @@ PomocnikGieldowy::PomocnikGieldowy(QWidget* parent)
     gridLayout->addWidget(result1, 0, 4);
     gridLayout->addWidget(resultLabel1, 0, 5);
     gridLayout->addWidget(calcBtn1, 0, 6);
-    gridLayout->addWidget(saveBtn1, 0, 7);
     
     //Second row
 
@@ -95,7 +90,6 @@ PomocnikGieldowy::PomocnikGieldowy(QWidget* parent)
     gridLayout->addWidget(result2, 1, 4);
     gridLayout->addWidget(resultLabel2, 1, 5);
     gridLayout->addWidget(calcBtn2, 1, 6);
-    gridLayout->addWidget(saveBtn2, 1, 7);
 
     //third row
 
@@ -106,7 +100,6 @@ PomocnikGieldowy::PomocnikGieldowy(QWidget* parent)
     gridLayout->addWidget(result3, 2, 4);
     gridLayout->addWidget(resultLabel3, 2, 5);
     gridLayout->addWidget(calcBtn3, 2, 6);
-    gridLayout->addWidget(saveBtn3, 2, 7);
 
     //fourth
 
@@ -117,12 +110,12 @@ PomocnikGieldowy::PomocnikGieldowy(QWidget* parent)
     gridLayout->addWidget(result4, 3, 4);
     gridLayout->addWidget(resultLabel4, 3, 5);
     gridLayout->addWidget(calcBtn4, 3, 6);
-    gridLayout->addWidget(saveBtn4, 3, 7);
 
     //Last row
 
-    gridLayout->addWidget(restoreBtn, 4, 6);
-    gridLayout->addWidget(refreshBtn, 4, 7);
+    gridLayout->addWidget(restoreBtn, 4, 5);
+    gridLayout->addWidget(refreshBtn, 4, 6);
+    gridLayout->addWidget(saveBtn, 4, 7);
 
     //---Set Layout---//
 
@@ -134,7 +127,7 @@ PomocnikGieldowy::PomocnikGieldowy(QWidget* parent)
     connect(calcBtn2, &QPushButton::clicked, this, &PomocnikGieldowy::get_data2);
     connect(calcBtn3, &QPushButton::clicked, this, &PomocnikGieldowy::get_data3);
     connect(calcBtn4, &QPushButton::clicked, this, &PomocnikGieldowy::get_data4);
-    connect(saveBtn1, &QPushButton::clicked, this, &PomocnikGieldowy::save_to_file1);
+    connect(saveBtn, &QPushButton::clicked, this, &PomocnikGieldowy::save_to_file);
 }
 
 //---Operations on actions---//
@@ -251,50 +244,60 @@ void PomocnikGieldowy::get_data4() {
 
 //save input data to file
 
-void PomocnikGieldowy::write_to_file(std::string actionValue, std::string actionPrice, int row) {
-    float actionValueFloat = std::stof(actionValue);
-    float actionPriceFloat = std::stof(actionPrice);
-    bool isTrue = check_input(actionValueFloat, actionPriceFloat);
+void PomocnikGieldowy::save_to_file() {
+    std::string data[4][2] = {
+        {actionValue1->text().toStdString(), actionPrice1->text().toStdString()},
+        {actionValue2->text().toStdString(), actionPrice2->text().toStdString()},
+        {actionValue3->text().toStdString(), actionPrice3->text().toStdString()},
+        {actionValue4->text().toStdString(), actionPrice4->text().toStdString()}
+    };
 
-    if (isTrue == true) {
-        std::fstream userData;
-        userData.open("data.txt");
+    try {
+        bool isTrue = false;
 
-        userData << actionValue;
-        userData << " ";
-        userData << actionPrice;
-        userData << "\n";
+        for (int x = 0; x < 4; x++) {
+            if (data[x][0] == "" || data[x][1] == "") {
+                isTrue = false;
+                break;
+            }
+            float value1 = std::stof(data[x][0]);
+            float value2 = std::stof(data[x][1]);
+            if (value1 < 0 || value2 < 0) {
+                isTrue = false;
+            }
+            else {
+                isTrue = true;
+            }
+        }
 
-        userData.close();
+        if (isTrue == true) {
+            std::fstream userData;
+            userData.open("data.txt");
 
-        QMessageBox msgBox;
-        msgBox.setText("Pomysle zapisano do pliku");
-        msgBox.exec();
-    }
-    else {
+            for (int x = 0; x < 4; x++) {
+                for (int y = 0; y < 2; y++) {
+                    userData << data[x][y];
+                    userData << " ";
+                }
+                userData << "\n";
+            }
+            userData.close();
+
+            QMessageBox msgBox;
+            msgBox.setText("Pomysle zapisano do pliku");
+            msgBox.exec();
+        }
+        else {
+            QMessageBox msgBox;
+            msgBox.setText("Blad zapisu do pliku");
+            msgBox.exec();
+        }
+
+    }catch (...) {
         QMessageBox msgBox;
         msgBox.setText("Blad zapisu do pliku");
         msgBox.exec();
     }
-}
-
-void PomocnikGieldowy::save_to_file1() {
-    std::string actionValue = actionValue1->text().toStdString();
-    std::string actionPrice = actionPrice1->text().toStdString();
-    write_to_file(actionValue, actionPrice, 1);
-
-}
-
-void PomocnikGieldowy::save_to_file2() {
-
-}
-
-void PomocnikGieldowy::save_to_file3() {
-
-}
-
-void PomocnikGieldowy::save_to_file4() {
-
 }
 
 void PomocnikGieldowy::get_actual_data1() {
