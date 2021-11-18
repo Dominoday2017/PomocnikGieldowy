@@ -10,6 +10,9 @@
 #include <QLabel>
 #include <iostream>
 #include <QMessageBox>
+#include <cpr/cpr.h>
+#include "gumbo.h"
+#include <ctime>
 
 class PomocnikGieldowy : public QWidget {
 
@@ -28,7 +31,9 @@ private slots:
     void get_data3();
     void get_data4();
     void save_to_file();
-    void get_actual_data1();
+    void read_from_file();
+    std::string generate_new_value(std::string oldValue);
+    void set_new_value();
     
 
 private:

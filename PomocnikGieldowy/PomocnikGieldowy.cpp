@@ -3,8 +3,10 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <fstream>
-#include <cpr/cpr.h>
-#include "gumbo.h"
+#include <vector>
+#include <QString.h>
+
+
 
 /*
 TODO:
@@ -128,6 +130,8 @@ PomocnikGieldowy::PomocnikGieldowy(QWidget* parent)
     connect(calcBtn3, &QPushButton::clicked, this, &PomocnikGieldowy::get_data3);
     connect(calcBtn4, &QPushButton::clicked, this, &PomocnikGieldowy::get_data4);
     connect(saveBtn, &QPushButton::clicked, this, &PomocnikGieldowy::save_to_file);
+    connect(restoreBtn, &QPushButton::clicked, this, &PomocnikGieldowy::read_from_file);
+    connect(refreshBtn, &QPushButton::clicked, this, &PomocnikGieldowy::set_new_value);
 }
 
 //---Operations on actions---//
@@ -147,7 +151,7 @@ float PomocnikGieldowy::calc_data(float actionValue, QString actionPriceString, 
 bool PomocnikGieldowy::check_input(float actionValue, float actionPrice) {
     if (actionValue <= 0 || actionPrice <= 0) {
         QMessageBox msgBox;
-        msgBox.setText("Mozna wprowadzac tylko liczby dodatnie");
+        msgBox.setText("Pole nie moze byc puste / mozna wprowadzac tylko liczby dodatnie");
         msgBox.exec();
         return false;
     }
@@ -277,9 +281,8 @@ void PomocnikGieldowy::save_to_file() {
             for (int x = 0; x < 4; x++) {
                 for (int y = 0; y < 2; y++) {
                     userData << data[x][y];
-                    userData << " ";
+                    userData << "\n";
                 }
-                userData << "\n";
             }
             userData.close();
 
@@ -300,6 +303,55 @@ void PomocnikGieldowy::save_to_file() {
     }
 }
 
-void PomocnikGieldowy::get_actual_data1() {
+//reading data from file and adding them to inputs
 
+void PomocnikGieldowy::read_from_file() {
+    try {
+        std::ifstream userData;
+        userData.open("data.txt");
+
+        std::string data[4][2];
+        int counter = 0;
+
+        for (int x = 0; x < 4; x++) {
+            for (int y = 0; y < 2; y++) {
+                std::getline(userData, data[x][y], '\n');
+            }   
+        }
+
+        userData.close();
+
+        actionValue1->setText(QString::fromStdString(data[0][0]));
+        actionValue2->setText(QString::fromStdString(data[1][0]));
+        actionValue3->setText(QString::fromStdString(data[2][0]));
+        actionValue4->setText(QString::fromStdString(data[3][0]));
+
+        actionPrice1->setText(QString::fromStdString(data[0][1]));
+        actionPrice2->setText(QString::fromStdString(data[1][1]));
+        actionPrice3->setText(QString::fromStdString(data[2][1]));
+        actionPrice4->setText(QString::fromStdString(data[3][1]));
+
+    }catch (...) {
+        QMessageBox msgBox;
+        msgBox.setText("Blad odczytu z pliku");
+        msgBox.exec();
+    }
+}
+
+std::string PomocnikGieldowy::generate_new_value(std::string oldValue) {
+    srand((unsigned)time(0));
+
+    float r;
+
+    if ((-1 + rand() % 2) < 0) r = std::stof(oldValue) - static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+    else r = std::stof(oldValue) + static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+    
+    return std::to_string(r);
+}
+
+void PomocnikGieldowy::set_new_value() {
+    std::string actionPrice1Value = valueLabel1->text().toStdString();
+    std::string actionPrice2Value = valueLabel2->text().toStdString();
+    valueLabel1->setText(QString::fromStdString(generate_new_value(actionPrice1Value)));
+    valueLabel2->setText(QString::fromStdString(generate_new_value(actionPrice2Value)));
 }
