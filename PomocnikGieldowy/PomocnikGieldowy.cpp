@@ -16,24 +16,13 @@ TODO:
     try to broke app
     change comment style
 */
-QString RandomFloat(float a, float b) {
-    float random = ((float)rand()) / (float)RAND_MAX;
-    float diff = b - a;
-    float r = random * diff;
 
-    float result = a + r;
-
-    QString str = QString::number(result, 'f', 2);
-    str.remove(QRegExp("0+$"));
-    str.remove(QRegExp("\\.$"));
-
-    return str;
-}
 
 PomocnikGieldowy::PomocnikGieldowy(QWidget* parent)
     : QWidget(parent) {
     srand((unsigned)time(0));
     //---Init all elements---//
+    QFont f("Arial", 10, QFont::Bold);
 
     nameLabel1 = new QLabel("KGHM", this);
     nameLabel2 = new QLabel("ALIOR", this);
@@ -68,10 +57,10 @@ PomocnikGieldowy::PomocnikGieldowy(QWidget* parent)
     calcBtn3 = new QPushButton("Policz", this);
     calcBtn4 = new QPushButton("Policz", this);
 
-    resultLabel1 = new QLabel("0", this);
-    resultLabel2 = new QLabel("0", this);
-    resultLabel3 = new QLabel("0", this);
-    resultLabel4 = new QLabel("0", this);
+    resultLabel1 = new QLabel("", this);
+    resultLabel2 = new QLabel("", this);
+    resultLabel3 = new QLabel("", this);
+    resultLabel4 = new QLabel("", this);
     auto result1 = new QLabel("Zysk/strata: ");
     auto result2 = new QLabel("Zysk/strata: ");
     auto result3 = new QLabel("Zysk/strata: ");
@@ -137,10 +126,10 @@ PomocnikGieldowy::PomocnikGieldowy(QWidget* parent)
 
     //---Add button functionality---//
 
-    connect(calcBtn1, &QPushButton::clicked, this, &PomocnikGieldowy::get_data1);
-    connect(calcBtn2, &QPushButton::clicked, this, &PomocnikGieldowy::get_data2);
-    connect(calcBtn3, &QPushButton::clicked, this, &PomocnikGieldowy::get_data3);
-    connect(calcBtn4, &QPushButton::clicked, this, &PomocnikGieldowy::get_data4);
+    connect(calcBtn1, &QPushButton::clicked, this, [this] {get_data(0); });
+    connect(calcBtn2, &QPushButton::clicked, this, [this] {get_data(1); });
+    connect(calcBtn3, &QPushButton::clicked, this, [this] {get_data(2); });
+    connect(calcBtn4, &QPushButton::clicked, this, [this] {get_data(3); });
     connect(saveBtn, &QPushButton::clicked, this, &PomocnikGieldowy::save_to_file);
     connect(restoreBtn, &QPushButton::clicked, this, &PomocnikGieldowy::read_from_file);
     connect(calcAllBtn, &QPushButton::clicked, this, &PomocnikGieldowy::calc_all);
@@ -150,11 +139,26 @@ PomocnikGieldowy::PomocnikGieldowy(QWidget* parent)
     timer->start(5000);
 }
 
+/* Generate random values after program start */
+
+QString RandomFloat(float a, float b) {
+    float random = ((float)rand()) / (float)RAND_MAX;
+    float diff = b - a;
+    float r = random * diff;
+
+    float result = a + r;
+
+    QString str = QString::number(result, 'f', 2);
+    str.remove(QRegExp("0+$"));
+    str.remove(QRegExp("\\.$"));
+
+    return str;
+}
+
 //---Operations on actions---//
 
-float tax = 0.003;
-
 float PomocnikGieldowy::calc_data(float actionValue, QString actionPriceString, float actionPrice) {
+    float tax = 0.003;
     float actionActualPrice = actionPriceString.toFloat();
     float result = (actionActualPrice * actionValue) - (actionValue * actionPrice) - (actionValue * actionActualPrice * tax) - (actionValue * actionPrice * tax);
 
@@ -176,88 +180,30 @@ bool PomocnikGieldowy::check_input(float actionValue, float actionPrice) {
 //change result color
 
 void PomocnikGieldowy::change_result_color(float value, int row) {
-    switch (row) {
-        case 1:
-            if (value < 0) resultLabel1->setStyleSheet("QLabel {color: red;}");
-            else if (value == 0) resultLabel1->setStyleSheet("QLabel {color: black;}");
-            else resultLabel1->setStyleSheet("QLabel {color: green;}");
-            break;
+    QList<QLabel*> actionResultList = { resultLabel1, resultLabel2, resultLabel3, resultLabel4 };
 
-        case 2:
-            if (value < 0) resultLabel2->setStyleSheet("QLabel {color: red;}");
-            else if (value == 0) resultLabel2->setStyleSheet("QLabel {color: black;}");
-            else resultLabel2->setStyleSheet("QLabel {color: green;}");
-            break;
-
-        case 3:
-            if (value < 0) resultLabel3->setStyleSheet("QLabel {color: red;}");
-            else if (value == 0) resultLabel3->setStyleSheet("QLabel {color: black;}");
-            else resultLabel3->setStyleSheet("QLabel {color: green;}");
-            break;
-
-        case 4:
-            if (value < 0) resultLabel4->setStyleSheet("QLabel {color: red;}");
-            else if (value == 0) resultLabel4->setStyleSheet("QLabel {color: black;}");
-            else resultLabel4->setStyleSheet("QLabel {color: green;}");
-            break;
-    }
+    if (value < 0) actionResultList[row-1]->setStyleSheet("QLabel {color: red;}");
+    else if (value == 0) actionResultList[row-1]->setStyleSheet("QLabel {color: black;}");
+    else actionResultList[row-1]->setStyleSheet("QLabel {color: green;}");
 }
 
 //take data from input and calc
 
-void PomocnikGieldowy::get_data1() {
-    float actionValue = actionValue1->text().toFloat();
-    QString actionPriceString = valueLabel1->text().replace("zl", "");
-    float actionPrice = actionPrice1->text().toFloat();
+void PomocnikGieldowy::get_data(int value) {
+    QList<QLineEdit*> actionValueList = { actionValue1, actionValue2, actionValue3, actionValue4 };
+    QList<QLabel*> actionLabelList = { valueLabel1, valueLabel2, valueLabel3, valueLabel4 };
+    QList<QLineEdit*> actionPriceList = { actionPrice1, actionPrice2, actionPrice3, actionPrice4 };
+    QList<QLabel*> actionResultList = { resultLabel1, resultLabel2, resultLabel3, resultLabel4 };
+
+    float actionValue = actionValueList[value]->text().toFloat();
+    QString actionPriceString = actionLabelList[value]->text().replace("zl", "");
+    float actionPrice = actionPriceList[value]->text().toFloat();
 
     bool isTrue = check_input(actionValue, actionPrice);
-    
     if (isTrue == true) {
         float resultValue = calc_data(actionValue, actionPriceString, actionPrice);
-        change_result_color(resultValue, 1);
-        resultLabel1->setText(QString::number(resultValue));
-    }
-}
-
-void PomocnikGieldowy::get_data2() {
-    float actionValue = actionValue2->text().toFloat();
-    QString actionPriceString = valueLabel2->text().replace("zl", "");
-    float actionPrice = actionPrice2->text().toFloat();
-
-    bool isTrue = check_input(actionValue, actionPrice);
-
-    if (isTrue == true) {
-        float resultValue = calc_data(actionValue, actionPriceString, actionPrice);
-        change_result_color(resultValue, 2);
-        resultLabel2->setText(QString::number(resultValue));
-    }
-}
-
-void PomocnikGieldowy::get_data3() {
-    float actionValue = actionValue3->text().toFloat();
-    QString actionPriceString = valueLabel3->text().replace("zl", "");
-    float actionPrice = actionPrice3->text().toFloat();
-
-    bool isTrue = check_input(actionValue, actionPrice);
-
-    if (isTrue == true) {
-        float resultValue = calc_data(actionValue, actionPriceString, actionPrice);
-        change_result_color(resultValue, 3);
-        resultLabel3->setText(QString::number(resultValue));
-    }
-}
-
-void PomocnikGieldowy::get_data4() {
-    float actionValue = actionValue4->text().toFloat();
-    QString actionPriceString = valueLabel4->text().replace("zl", "");
-    float actionPrice = actionPrice4->text().toFloat();
-
-    bool isTrue = check_input(actionValue, actionPrice);
-
-    if (isTrue == true) {
-        float resultValue = calc_data(actionValue, actionPriceString, actionPrice);
-        change_result_color(resultValue, 4);
-        resultLabel4->setText(QString::number(resultValue));
+        change_result_color(resultValue, value + 1);
+        actionResultList[value]->setText(QString::number(resultValue));
     }
 }
 
@@ -336,15 +282,23 @@ void PomocnikGieldowy::read_from_file() {
 
         userData.close();
 
-        actionValue1->setText(QString::fromStdString(data[0][0]));
-        actionValue2->setText(QString::fromStdString(data[1][0]));
-        actionValue3->setText(QString::fromStdString(data[2][0]));
-        actionValue4->setText(QString::fromStdString(data[3][0]));
+        QList<QLineEdit*> actionValueList = { actionValue1, actionValue2, actionValue3, actionValue4 };
+        QList<QLineEdit*> actionPriceList = { actionPrice1, actionPrice2, actionPrice3, actionPrice4 };
 
-        actionPrice1->setText(QString::fromStdString(data[0][1]));
-        actionPrice2->setText(QString::fromStdString(data[1][1]));
-        actionPrice3->setText(QString::fromStdString(data[2][1]));
-        actionPrice4->setText(QString::fromStdString(data[3][1]));
+        for (int x = 0; x < 4; x++) {
+            actionValueList[x]->setText(QString::fromStdString(data[x][0]));
+            actionPriceList[x]->setText(QString::fromStdString(data[x][1]));
+        }
+
+        //actionValue1->setText(QString::fromStdString(data[0][0]));
+        //actionValue2->setText(QString::fromStdString(data[1][0]));
+        //actionValue3->setText(QString::fromStdString(data[2][0]));
+        //actionValue4->setText(QString::fromStdString(data[3][0]));
+
+        //actionPrice1->setText(QString::fromStdString(data[0][1]));
+        //actionPrice2->setText(QString::fromStdString(data[1][1]));
+        //actionPrice3->setText(QString::fromStdString(data[2][1]));
+        //actionPrice4->setText(QString::fromStdString(data[3][1]));
 
     }catch (...) {
         QMessageBox msgBox;
@@ -371,14 +325,15 @@ std::string PomocnikGieldowy::generate_new_value(std::string oldValue) {
 }
 
 void PomocnikGieldowy::set_new_value() {
-    QList<QLabel *> labelsList = { valueLabel1, valueLabel2, valueLabel3, valueLabel4 };
+    QList<QLabel*> labelsValueList = { valueLabel1, valueLabel2, valueLabel3, valueLabel4 };
+
     std::string actionPrice[4];
     for (int x = 0; x < 4; x++) {
-        actionPrice[x] = labelsList[x]->text().toStdString();
+        actionPrice[x] = labelsValueList[x]->text().toStdString();
     }
 
     for (int x = 0; x < 4; x++) {
-        labelsList[x]->setText(QString::fromStdString(generate_new_value(actionPrice[x]) + "zl"));
+        labelsValueList[x]->setText(QString::fromStdString(generate_new_value(actionPrice[x]) + "zl"));
     }
 
     //std::string actionPrice1Value = valueLabel1->text().toStdString();

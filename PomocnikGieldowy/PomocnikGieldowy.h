@@ -30,15 +30,13 @@ private slots:
     float calc_data(float actionValue, QString actionPriceString, float actionPrice);
     bool check_input(float actionValue, float actionPrice);
     void change_result_color(float value, int row);
-    void get_data1();
-    void get_data2();
-    void get_data3();
-    void get_data4();
+    void get_data(int value);
     void save_to_file();
     void read_from_file();
     std::string generate_new_value(std::string oldValue);
     void set_new_value();
     void calc_all();
+
     
 
 private:
