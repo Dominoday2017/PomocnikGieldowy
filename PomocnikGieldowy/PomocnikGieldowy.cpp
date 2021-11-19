@@ -6,8 +6,6 @@
 #include <vector>
 #include <QString.h>
 
-
-
 /*
 TODO:
     background
@@ -16,11 +14,25 @@ TODO:
     colors
     picture
     try to broke app
+    change comment style
 */
+QString RandomFloat(float a, float b) {
+    float random = ((float)rand()) / (float)RAND_MAX;
+    float diff = b - a;
+    float r = random * diff;
+
+    float result = a + r;
+
+    QString str = QString::number(result, 'f', 2);
+    str.remove(QRegExp("0+$"));
+    str.remove(QRegExp("\\.$"));
+
+    return str;
+}
 
 PomocnikGieldowy::PomocnikGieldowy(QWidget* parent)
     : QWidget(parent) {
-
+    srand((unsigned)time(0));
     //---Init all elements---//
 
     nameLabel1 = new QLabel("KGHM", this);
@@ -28,10 +40,10 @@ PomocnikGieldowy::PomocnikGieldowy(QWidget* parent)
     nameLabel3 = new QLabel("JSW", this);
     nameLabel4 = new QLabel("PKO", this);
 
-    valueLabel1 = new QLabel("100zl", this);
-    valueLabel2 = new QLabel("4345zl", this);
-    valueLabel3 = new QLabel("43zl", this);
-    valueLabel4 = new QLabel("11zl", this);
+    valueLabel1 = new QLabel( RandomFloat(0.1, 300.0) + "zl", this );
+    valueLabel2 = new QLabel( RandomFloat(0.1, 300.0) + "zl", this );
+    valueLabel3 = new QLabel( RandomFloat(0.1, 300.0) + "zl", this );
+    valueLabel4 = new QLabel( RandomFloat(0.1, 300.0) + "zl", this );
 
     actionValue1 = new QLineEdit(this);
     actionValue2 = new QLineEdit(this);
@@ -66,8 +78,8 @@ PomocnikGieldowy::PomocnikGieldowy(QWidget* parent)
     auto result4 = new QLabel("Zysk/strata: ");
 
     restoreBtn = new QPushButton("Przywroc z pamieci", this);
-    refreshBtn = new QPushButton("Odswiez akcje");
-    saveBtn = new QPushButton("Zapisz");
+    calcAllBtn = new QPushButton("Policz wszystko");
+    saveBtn = new QPushButton("Zapisz do pamieci");
 
     //---Add elements to layout---//
 
@@ -115,10 +127,10 @@ PomocnikGieldowy::PomocnikGieldowy(QWidget* parent)
 
     //Last row
 
-    gridLayout->addWidget(restoreBtn, 4, 5);
-    gridLayout->addWidget(refreshBtn, 4, 6);
-    gridLayout->addWidget(saveBtn, 4, 7);
-
+    gridLayout->addWidget(saveBtn, 4, 5);
+    gridLayout->addWidget(restoreBtn, 4, 6);
+    gridLayout->addWidget(calcAllBtn, 4, 7);
+    
     //---Set Layout---//
 
     setLayout(gridLayout);
@@ -131,7 +143,11 @@ PomocnikGieldowy::PomocnikGieldowy(QWidget* parent)
     connect(calcBtn4, &QPushButton::clicked, this, &PomocnikGieldowy::get_data4);
     connect(saveBtn, &QPushButton::clicked, this, &PomocnikGieldowy::save_to_file);
     connect(restoreBtn, &QPushButton::clicked, this, &PomocnikGieldowy::read_from_file);
-    connect(refreshBtn, &QPushButton::clicked, this, &PomocnikGieldowy::set_new_value);
+    connect(calcAllBtn, &QPushButton::clicked, this, &PomocnikGieldowy::calc_all);
+
+    QTimer* timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this, QOverload<>::of(&PomocnikGieldowy::set_new_value));
+    timer->start(5000);
 }
 
 //---Operations on actions---//
@@ -143,7 +159,6 @@ float PomocnikGieldowy::calc_data(float actionValue, QString actionPriceString, 
     float result = (actionActualPrice * actionValue) - (actionValue * actionPrice) - (actionValue * actionActualPrice * tax) - (actionValue * actionPrice * tax);
 
     return result;
-    
 }
 
 //check the input
@@ -343,15 +358,41 @@ std::string PomocnikGieldowy::generate_new_value(std::string oldValue) {
 
     float r;
 
-    if ((-1 + rand() % 2) < 0) r = std::stof(oldValue) - static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
-    else r = std::stof(oldValue) + static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
-    
-    return std::to_string(r);
+    if ((-1 + rand() % 2) < 0)
+        r = std::stof(oldValue) - static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+    else
+        r = std::stof(oldValue) + static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+
+    QString str = QString::number(r, 'f', 2);
+    str.remove(QRegExp("0+$"));
+    str.remove(QRegExp("\\.$"));
+
+    return str.toStdString();
 }
 
 void PomocnikGieldowy::set_new_value() {
-    std::string actionPrice1Value = valueLabel1->text().toStdString();
-    std::string actionPrice2Value = valueLabel2->text().toStdString();
-    valueLabel1->setText(QString::fromStdString(generate_new_value(actionPrice1Value)));
-    valueLabel2->setText(QString::fromStdString(generate_new_value(actionPrice2Value)));
+    QList<QLabel *> labelsList = { valueLabel1, valueLabel2, valueLabel3, valueLabel4 };
+    std::string actionPrice[4];
+    for (int x = 0; x < 4; x++) {
+        actionPrice[x] = labelsList[x]->text().toStdString();
+    }
+
+    for (int x = 0; x < 4; x++) {
+        labelsList[x]->setText(QString::fromStdString(generate_new_value(actionPrice[x]) + "zl"));
+    }
+
+    //std::string actionPrice1Value = valueLabel1->text().toStdString();
+    //std::string actionPrice2Value = valueLabel2->text().toStdString();
+    //std::string actionPrice3Value = valueLabel3->text().toStdString();
+    //std::string actionPrice4Value = valueLabel4->text().toStdString();
+
+
+    //valueLabel1->setText(QString::fromStdString(generate_new_value(actionPrice1Value) + "zl"));
+    //valueLabel2->setText(QString::fromStdString(generate_new_value(actionPrice2Value) + "zl"));
+    //valueLabel3->setText(QString::fromStdString(generate_new_value(actionPrice3Value) + "zl"));
+    //valueLabel4->setText(QString::fromStdString(generate_new_value(actionPrice4Value) + "zl"));
+}
+
+void PomocnikGieldowy::calc_all() {
+    
 }

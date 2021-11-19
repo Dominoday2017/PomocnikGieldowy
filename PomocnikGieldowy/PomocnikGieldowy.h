@@ -10,9 +10,12 @@
 #include <QLabel>
 #include <iostream>
 #include <QMessageBox>
-#include <cpr/cpr.h>
-#include "gumbo.h"
 #include <ctime>
+#include <math.h>
+#include <cmath>
+#include <thread>
+#include <chrono>
+#include <QTimer>
 
 class PomocnikGieldowy : public QWidget {
 
@@ -20,6 +23,7 @@ class PomocnikGieldowy : public QWidget {
 
 public:
     PomocnikGieldowy(QWidget* parent = nullptr);
+    void runMultiThread();
 
 private slots:
 
@@ -34,6 +38,7 @@ private slots:
     void read_from_file();
     std::string generate_new_value(std::string oldValue);
     void set_new_value();
+    void calc_all();
     
 
 private:
@@ -68,7 +73,7 @@ private:
     QLabel* resultLabel4;
 
     QPushButton* restoreBtn;
-    QPushButton* refreshBtn;
+    QPushButton* calcAllBtn;
     QPushButton* saveBtn;
 
 };
