@@ -23,14 +23,13 @@ class PomocnikGieldowy : public QWidget {
 
 public:
     PomocnikGieldowy(QWidget* parent = nullptr);
-    void runMultiThread();
 
 private slots:
 
     float calc_data(float actionValue, QString actionPriceString, float actionPrice);
     bool check_input(float actionValue, float actionPrice);
     void change_result_color(float value, int row);
-    void get_data(int value);
+    void get_data_to_calc(int value);
     void save_to_file();
     void read_from_file();
     std::string generate_new_value(std::string oldValue);
