@@ -78,7 +78,7 @@ PomocnikGieldowy::PomocnikGieldowy(QWidget* parent) :
     restoreBtn->setFont(fontBtn);
 
     calcAllBtn->setIcon(QIcon("C:/Users/gawla/CLionProjects/pomocnik-gieldowy/calc_btn.png"));
-    calcAllBtn->setIconSize(QSize(50, 50));
+    calcAllBtn->setIconSize(QSize(45, 45));
     calcAllBtn->setFont(fontBtn);
 
     saveBtn->setIcon(QIcon("C:/Users/gawla/CLionProjects/pomocnik-gieldowy/save_btn.png"));
