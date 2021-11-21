@@ -8,7 +8,7 @@ int main(int argc, char *argv[])
 
     window.resize(700, 350);
     window.setWindowTitle("Pomocnik Gieldowy");
-
     window.show();
+
     return app.exec();
 }
