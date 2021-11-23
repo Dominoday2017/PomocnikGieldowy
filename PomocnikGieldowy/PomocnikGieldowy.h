@@ -7,7 +7,6 @@
 #include <QHBoxLayout>
 #include <fstream>
 #include <vector>
-//#include <QString.h>
 #include <QWidget>
 #include <QApplication>
 #include <QPushButton>

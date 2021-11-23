@@ -171,7 +171,7 @@ PomocnikGieldowy::PomocnikGieldowy(QWidget* parent) :
 
     QTimer* timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, QOverload<>::of(&PomocnikGieldowy::set_new_value));
-    timer->start(7000);
+    timer->start(3000);
 }
 
 /* Calculate result */
@@ -322,10 +322,16 @@ std::string PomocnikGieldowy::generate_new_value(std::string oldValue) {
     int value = 0;
     value = (-1 + rand() % 2);
 
-    if(value < 0)
+    if (value < 0)
+    {
         r = std::stof(oldValue) - static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+    }
+        
     else
+    {
         r = std::stof(oldValue) + static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+    }
+        
     
     QString str = QString::number(r, 'f', 2);
     str.remove(QRegExp("0+$"));
