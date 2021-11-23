@@ -73,19 +73,19 @@ PomocnikGieldowy::PomocnikGieldowy(QWidget* parent) :
 
     /* Add icons and style to buttons */
 
-    restoreBtn->setIcon(QIcon("C:/Users/gawla/CLionProjects/pomocnik-gieldowy/restore_btn.png"));
+    restoreBtn->setIcon(QIcon("restore_btn.png"));
     restoreBtn->setIconSize(QSize(45, 45));
     restoreBtn->setFont(fontBtn);
 
-    calcAllBtn->setIcon(QIcon("C:/Users/gawla/CLionProjects/pomocnik-gieldowy/calc_btn.png"));
+    calcAllBtn->setIcon(QIcon("calc_btn.png"));
     calcAllBtn->setIconSize(QSize(45, 45));
     calcAllBtn->setFont(fontBtn);
 
-    saveBtn->setIcon(QIcon("C:/Users/gawla/CLionProjects/pomocnik-gieldowy/save_btn.png"));
+    saveBtn->setIcon(QIcon("save_btn.png"));
     saveBtn->setIconSize(QSize(45, 45));
     saveBtn->setFont(fontBtn);
    
-    clearAllBtn->setIcon(QIcon("C:/Users/gawla/CLionProjects/pomocnik-gieldowy/clear_btn.png"));
+    clearAllBtn->setIcon(QIcon("clear_btn.png"));
     clearAllBtn->setIconSize(QSize(40, 40));
     clearAllBtn->setFont(fontBtn);
 
@@ -139,7 +139,7 @@ PomocnikGieldowy::PomocnikGieldowy(QWidget* parent) :
         resultLabelList[x]->setFont(font);
         resultCalcBtnList[x]->setFont(fontBtn);
 
-        resultCalcBtnList[x]->setIcon(QIcon("C:/Users/gawla/CLionProjects/pomocnik-gieldowy/calc_btn.png"));
+        resultCalcBtnList[x]->setIcon(QIcon("calc_btn.png"));
         resultCalcBtnList[x]->setIconSize(QSize(40, 40));
 
         resultLabelList[x]->setMinimumWidth(100);
